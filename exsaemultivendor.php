@@ -26,6 +26,7 @@ define( 'EXSAEMULTIVENDOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor.php';
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-store.php';
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-product.php';
+require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-listing.php';
 
 // Activation hook
 function exsaemultivendor_activate() {

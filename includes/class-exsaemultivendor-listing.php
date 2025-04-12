@@ -1,0 +1,98 @@
+<?php
+class ExsaeMultivendor_Listing {
+  public static function activate() {
+    self::register_post_type();
+    $roles = array('subscriber','contributor','author','editor','administrator');
+    foreach ($roles as $role_name) {
+      $role = get_role($role_name);
+      if($role) {
+        $role->add_cap('edit_listing');
+        $role->add_cap('read_listing');
+        $role->add_cap('delete_listing');
+        $role->add_cap('edit_listing');
+        $role->add_cap('edit_others_listing');
+        $role->add_cap('publish_listing');
+        $role->add_cap('read_private_listing');
+      }
+    }
+  }
+
+  public static function deactivate() {
+    unregister_post_type( 'listing' );
+  }
+
+  public static function register_post_type() {
+    $labels = array(
+        'name'               => _x( 'Listings', 'post type general name', 'exsae-multivendor-listings' ),
+        'singular_name'      => _x( 'Listing', 'post type singular name', 'exsae-multivendor-listings' ),
+        'menu_name'          => _x( 'Listings', 'admin menu', 'exsae-multivendor-listings' ),
+        'name_admin_bar'     => _x( 'Listing', 'add new on admin bar', 'exsae-multivendor-listings' ),
+        'add_new'            => _x( 'Add New', 'listing', 'exsae-multivendor-listings' ),
+        'add_new_item'       => __( 'Add New Listing', 'exsae-multivendor-listings' ),
+        'new_item'           => __( 'New Listing', 'exsae-multivendor-listings' ),
+        'edit_item'          => __( 'Edit Listing', 'exsae-multivendor-listings' ),
+        'view_item'          => __( 'View Listing', 'exsae-multivendor-listings' ),
+        'all_items'          => __( 'All Listings', 'exsae-multivendor-listings' ),
+        'search_items'       => __( 'Search Listings', 'exsae-multivendor-listings' ),
+        'parent_item_colon'  => __( 'Parent Listings:', 'exsae-multivendor-listings' ),
+        'not_found'          => __( 'No listings found.', 'exsae-multivendor-listings' ),
+        'not_found_in_trash' => __( 'No listings found in Trash.', 'exsae-multivendor-listings' ),
+    );
+    
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array( 'slug' => 'listings' ),
+        'capability_type'    => 'listing',
+        'capabilities'       => array(
+          'edit_post'          => 'edit_listing',
+          'read_post'          => 'read_listing',
+          'delete_post'        => 'delete_listing',
+          'edit_posts'         => 'edit_listing',
+          'edit_others_posts'  => 'edit_others_listing',
+          'publish_posts'      => 'publish_listing',
+          'read_private_posts' => 'read_private_listing',
+        ),
+        'hierarchical'       => false,
+        'menu_icon'          => 'dashicons-list-view', // Dashicon for the menu item
+        'menu_position'      => 5,
+        'supports'           => false,
+    );
+    register_post_type( 'listing', $args );
+  }
+
+  public static function init() {
+    self::register_post_type();
+  }
+
+  public static function add_meta_boxes() {
+    add_meta_box(
+      'product_price',
+      __( 'Product Price', 'exsae-multivendor-listing' ),
+      function($post){
+        $product_price = get_post_meta( $post->ID, 'product_price', true );
+        echo '<label for="product_price">' . __( 'Price:', 'exsae-multivendor-listing' ) . '</label>';
+        echo '<input type="number" placeholder="0.0" step="0.5" min="0.0" id="product_price" name="product_price" value="' . esc_attr( $product_price ) . '" />';
+        echo '<p class="description">' . __( 'Enter the product price.', 'exsae-multivendor-listing' ) . '</p>';
+      },
+      'listing'
+    );
+  }
+
+  public static function save_post( $post_id ) {
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+      return;
+    }
+
+    if ( isset( $_POST['product_price'] ) ) {
+      update_post_meta( $post_id, 'product_price', sanitize_text_field( $_POST['product_price'] ) );
+    } else {
+      update_post_meta( $post_id, 'product_price', 0);
+    }
+  }
+}
+
