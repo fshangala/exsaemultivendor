@@ -55,4 +55,10 @@ function exsaemultivendor_insert_post($post_id, $post, $update) {
 }
 add_action('wp_insert_post', 'exsaemultivendor_insert_post', 10, 3);
 
+// Restrict access to stores based on user ownership
+function exsaemultivendor_restrict_post_access( $query ) {
+  ExsaeMultivendor::restrict_post_access( $query );
+}
+add_action( 'pre_get_posts', 'exsaemultivendor_restrict_post_access' );
+
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-login.php';

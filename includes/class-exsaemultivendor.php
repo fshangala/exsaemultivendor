@@ -16,4 +16,8 @@ class ExsaeMultivendor {
   public static function insert_post($post_id, $post, $update) {
     ExsaeMultivendor_Store::insert_post($post_id, $post, $update);
   }
+
+  public static function restrict_post_access( $query ) {
+    ExsaeMultivendor_Store::restrict_post_access($query);
+  }
 }

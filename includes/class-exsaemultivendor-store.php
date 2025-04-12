@@ -1,5 +1,19 @@
 <?php
 class ExsaeMultivendor_Store {
+  public static function restrict_post_access($query) {
+    global $pagenow;
+    if ( is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset( $query->query_vars['post_type'] ) && $query->query_vars['post_type'] == 'store' && !current_user_can('edit_others_store') ) {
+        $user_id = get_current_user_id();
+        $query->set( 'meta_query', array(
+            array(
+                'key'     => 'store_owner',
+                'value'   => $user_id,
+                'compare' => '=',
+            ),
+        ) );
+    }
+  }
+  
   public static function insert_post( $post_id, $post, $update ) {
     // Check if the post type is 'store' and if it's a new store creation
     if ( $post->post_type == 'store' && ! $update ) { // Only on new store creation
