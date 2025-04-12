@@ -13,7 +13,7 @@ class ExsaeMultivendor_Store {
         ) );
     }
   }
-  
+
   public static function insert_post( $post_id, $post, $update ) {
     // Check if the post type is 'store' and if it's a new store creation
     if ( $post->post_type == 'store' && ! $update ) { // Only on new store creation
@@ -72,9 +72,21 @@ class ExsaeMultivendor_Store {
 
   public static function activate() {
     self::register_post_type();
+    add_role(
+        'store_admin',
+        'Store Admin',
+        array(
+            'read'         => true,
+            'edit_posts'   => true,
+            'delete_posts' => true,
+            'publish_posts'=> true,
+            'upload_files' => true,
+        )
+    );
   }
 
   public static function deactivate() {
     unregister_post_type( 'store' );
+    remove_role('store_admin');
   }
 }
