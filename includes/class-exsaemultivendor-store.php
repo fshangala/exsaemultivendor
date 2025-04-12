@@ -68,6 +68,7 @@ class ExsaeMultivendor_Store {
           'read_private_posts' => 'read_private_stores',
         ),
         'hierarchical'       => false,
+        'menu_icon'          => 'dashicons-store', // Dashicon for the menu item
         'menu_position'      => 5,
         'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
     );
