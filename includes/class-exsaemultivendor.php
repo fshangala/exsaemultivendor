@@ -42,5 +42,6 @@ class ExsaeMultivendor {
   public static function extras() {
     ExsaeMultivendor_Store::extras();
     ExsaeMultivendor_Product::extras();
+    ExsaeMultivendor_Listing::extras();
   }
 }

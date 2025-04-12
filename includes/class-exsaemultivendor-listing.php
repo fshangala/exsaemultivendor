@@ -71,6 +71,34 @@ class ExsaeMultivendor_Listing {
 
   public static function add_meta_boxes() {
     add_meta_box(
+      'listing_product',
+      __('Listing Product','exsae-multivendor-listing'),
+      function($post) {
+        $selected_product = get_post_meta( $post->ID, 'listing_product', true );
+    
+        $products = get_posts( array(
+            'post_type'      => 'product',
+            'posts_per_page' => -1,
+        ) );
+    
+        if ( $products ) {
+            echo '<select name="listing_product" id="listing_product">';
+            echo '<option value="">' . __( 'Select a Product', 'exsae-multivendor-listing' ) . '</option>';
+            foreach ( $products as $product ) {
+                $selected = '';
+                if ( $selected_product == $product->ID ) {
+                    $selected = 'selected="selected"';
+                }
+                echo '<option value="' . esc_attr( $product->ID ) . '" ' . $selected . '>' . esc_html( $product->post_title ) . '</option>';
+            }
+            echo '</select>';
+        } else {
+            echo '<p>' . __( 'No products available.', 'exsae-multivendor-listing' ) . '</p>';
+        }
+      }
+    );
+
+    add_meta_box(
       'product_price',
       __( 'Product Price', 'exsae-multivendor-listing' ),
       function($post){
@@ -88,11 +116,56 @@ class ExsaeMultivendor_Listing {
       return;
     }
 
+    if ( isset( $_POST['listing_product'] ) ) {
+      update_post_meta( $post_id,'listing_product', sanitize_text_field( $_POST['listing_product'] ) );
+    } else {
+      // update_post_meta( $post_id,'listing_product', null );
+      delete_post_meta( $post_id,'listing_product');
+    }
+
     if ( isset( $_POST['product_price'] ) ) {
       update_post_meta( $post_id, 'product_price', sanitize_text_field( $_POST['product_price'] ) );
     } else {
-      update_post_meta( $post_id, 'product_price', 0);
+      // update_post_meta( $post_id, 'product_price', 0);
+      delete_post_meta( $post_id, 'product_price');
     }
+  }
+
+  public static function extras() {
+    function add_product_name_column( $columns ) {
+      $columns = array(
+        'product_name' => __('Product Name', 'exsae-multivendor-listing'),
+        'product_price' => __('Product Price', 'exsae-multivendor-listing'),
+      );
+      return $columns;
+    }
+    add_filter( 'manage_listing_posts_columns', 'add_product_name_column' );
+    function display_product_name_column( $column, $post_id ) {
+      $product_id = get_post_meta( $post_id, 'listing_product', true );
+      $product = null;
+      if($product_id) {
+        $product = get_post($product_id);
+      }
+
+      if ( $column == 'product_name' ) {
+        if($product) {
+          $product = get_post($product_id);
+          echo esc_html( $product->post_title );
+        } else {
+          echo __('No product associated!','exsae-multivendor-listing');
+        }
+      }
+
+      if ($column == 'product_price') {
+        if($product) {
+          $product_price = get_post_meta($post_id, 'product_price', true);
+          echo esc_html( $product_price );
+        } else {
+          echo __('0.0','exsae-multivendor-listing');
+        }
+      }
+    }
+    add_action( 'manage_listing_posts_custom_column', 'display_product_name_column', 10, 2 );
   }
 }
 
