@@ -25,6 +25,7 @@ define( 'EXSAEMULTIVENDOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 // Manually include necessary files
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor.php';
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-store.php';
+require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-product.php';
 
 // Activation hook
 function exsaemultivendor_activate() {
@@ -59,6 +60,11 @@ function exsaemultivendor_add_meta_boxes() {
   ExsaeMultivendor::add_meta_boxes();
 }
 add_action( 'add_meta_boxes', 'exsaemultivendor_add_meta_boxes' );
+
+function exsaemultivendor_save_post($post_id) {
+  ExsaeMultivendor::save_post($post_id);
+}
+add_action('save_post', 'exsaemultivendor_save_post');
 
 ExsaeMultivendor::extras();
 
