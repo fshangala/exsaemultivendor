@@ -24,6 +24,7 @@ define( 'EXSAEMULTIVENDOR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // Manually include necessary files
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor.php';
+require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-store.php';
 
 // Activation hook
 function exsaemultivendor_activate() {
@@ -43,13 +44,15 @@ function exsaemultivendor_uninstall() {
 }
 register_uninstall_hook( __FILE__, 'exsaemultivendor_uninstall' );
 
-// Initialize the main plugin class
+// Initialize plugin
 function exsaemultivendor_init() {
-  if ( class_exists( 'ExsaeMultivendor' ) ) {
-    $exsaemultivendor = new ExsaeMultivendor();
-    $exsaemultivendor->init();
-  }
+  ExsaeMultivendor::init();
 }
-add_action( 'plugins_loaded', 'exsaemultivendor_init' );
+add_action('init', 'exsaemultivendor_init');
+
+function exsaemultivendor_insert_post($post_id, $post, $update) {
+  ExsaeMultivendor::insert_post($post_id, $post, $update);
+}
+add_action('wp_insert_post', 'exsaemultivendor_insert_post', 10, 3);
 
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-login.php';
