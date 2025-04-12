@@ -57,7 +57,16 @@ class ExsaeMultivendor_Store {
         'show_in_menu'       => true, // Show in the admin menu
         'query_var'          => true,
         'rewrite'            => array( 'slug' => 'stores' ),
-        'capability_type'    => 'post',
+        'capability_type'    => 'store',
+        'capabilities'       => array(
+          'edit_post'          => 'edit_store',
+          'read_post'          => 'read_store',
+          'delete_post'        => 'delete_store',
+          'edit_posts'         => 'edit_stores',
+          'edit_others_posts'  => 'edit_others_stores',
+          'publish_posts'      => 'publish_stores',
+          'read_private_posts' => 'read_private_stores',
+        ),
         'hierarchical'       => false,
         'menu_position'      => 5,
         'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
@@ -72,21 +81,25 @@ class ExsaeMultivendor_Store {
 
   public static function activate() {
     self::register_post_type();
-    add_role(
-        'store_admin',
-        'Store Admin',
-        array(
-            'read'         => true,
-            'edit_posts'   => true,
-            'delete_posts' => true,
-            'publish_posts'=> true,
-            'upload_files' => true,
-        )
-    );
+    $roles = array('subscriber','contributor','author','editor','administrator');
+    foreach ($roles as $role_name) {
+      $role = get_role($role_name);
+      if($role) {
+        $role->add_cap('edit_store');
+        $role->add_cap('read_store');
+        $role->add_cap('delete_store');
+        $role->add_cap('edit_stores');
+        $role->add_cap('edit_others_stores');
+        $role->add_cap('publish_stores');
+        $role->add_cap('read_private_stores');
+      }
+    }
+    flush_rewrite_rules();
   }
 
   public static function deactivate() {
     unregister_post_type( 'store' );
     remove_role('store_admin');
+    flush_rewrite_rules();
   }
 }
