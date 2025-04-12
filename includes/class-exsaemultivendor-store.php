@@ -1,18 +1,25 @@
 <?php
 class ExsaeMultivendor_Store {
-  public static function add_meta_boxes() {
-    global $post;
-    if ( get_post_type( $post ) == 'store' ) {
-        ?>
-        <script type="text/javascript">
-            (function($) {
-                $(document).ready(function() {
-                    $('label[for="store_owner"]').closest('.postbox').hide();
-                });
-            })(jQuery);
-        </script>
-        <?php
+  public static function render_store_owner_meta_box($post) {
+    $user_id = get_post_field( 'post_author', $post->ID );
+    $user = get_userdata( $user_id );
+
+    if ( $user ) {
+        echo '<p>' . esc_html( $user->display_name ) . '</p>';
+    } else {
+        echo '<p>' . __( 'Owner not found.', 'exsae-multivendor-stores' ) . '</p>';
     }
+  }
+
+  public static function add_meta_boxes() {
+    add_meta_box(
+        'store_owner_display',
+        __( 'Store Owner', 'exsae-multivendor-stores' ),
+        array( __CLASS__, 'render_store_owner_meta_box' ),
+        'store',
+        'side',
+        'default'
+    );
   }
 
   public static function restrict_post_access($query) {
@@ -33,7 +40,6 @@ class ExsaeMultivendor_Store {
     // Check if the post type is 'store' and if it's a new store creation
     if ( $post->post_type == 'store' && ! $update ) { // Only on new store creation
         $user_id = get_current_user_id();
-        update_post_meta( $post_id, 'store_owner', $user_id );
 
         // Grant store admin capabilities to the user
         $user = new WP_User( $user_id );
@@ -85,7 +91,7 @@ class ExsaeMultivendor_Store {
         'hierarchical'       => false,
         'menu_icon'          => 'dashicons-store', // Dashicon for the menu item
         'menu_position'      => 5,
-        'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
+        'supports'           => array( 'title', 'editor', 'thumbnail'),
     );
 
     register_post_type( 'store', $args );
@@ -117,5 +123,27 @@ class ExsaeMultivendor_Store {
     unregister_post_type( 'store' );
     remove_role('store_admin');
     flush_rewrite_rules();
+  }
+
+  public static function extras() {
+    function exsaemultivendor_add_store_owner_column( $columns ) {
+      $columns['store_owner'] = __( 'Store Owner', 'exsae-multivendor-stores' );
+      return $columns;
+    }
+    add_filter( 'manage_store_posts_columns', 'exsaemultivendor_add_store_owner_column' );
+    
+    function exsaemultivendor_display_store_owner_column( $column, $post_id ) {
+      if ( $column == 'store_owner' ) {
+          $user_id = get_post_field( 'post_author', $post_id );
+          $user = get_userdata( $user_id );
+    
+          if ( $user ) {
+              echo esc_html( $user->display_name );
+          } else {
+              echo __( 'Owner not found.', 'exsae-multivendor-stores' );
+          }
+      }
+    }
+    add_action( 'manage_store_posts_custom_column', 'exsaemultivendor_display_store_owner_column', 10, 2 );
   }
 }

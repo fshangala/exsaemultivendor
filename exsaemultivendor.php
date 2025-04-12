@@ -66,4 +66,6 @@ function exsaemultivendor_add_meta_boxes() {
 }
 add_action( 'add_meta_boxes', 'exsaemultivendor_add_meta_boxes' );
 
+ExsaeMultivendor::extras();
+
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-login.php';

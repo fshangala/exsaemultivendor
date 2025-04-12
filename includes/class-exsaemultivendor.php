@@ -24,4 +24,8 @@ class ExsaeMultivendor {
   public static function add_meta_boxes() {
     ExsaeMultivendor_Store::add_meta_boxes();
   }
+
+  public static function extras() {
+    ExsaeMultivendor_Store::extras();
+  }
 }
