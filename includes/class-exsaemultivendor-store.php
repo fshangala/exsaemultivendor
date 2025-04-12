@@ -23,17 +23,17 @@ class ExsaeMultivendor_Store {
   }
 
   public static function restrict_post_access($query) {
-    global $pagenow;
-    if ( is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset( $query->query_vars['post_type'] ) && $query->query_vars['post_type'] == 'store' && !current_user_can('edit_others_store') ) {
-        $user_id = get_current_user_id();
-        $query->set( 'meta_query', array(
-            array(
-                'key'     => 'store_owner',
-                'value'   => $user_id,
-                'compare' => '=',
-            ),
-        ) );
-    }
+    // global $pagenow;
+    // if ( is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset( $query->query_vars['post_type'] ) && $query->query_vars['post_type'] == 'store' && !current_user_can('edit_others_store') ) {
+    //     $user_id = get_current_user_id();
+    //     $query->set( 'meta_query', array(
+    //         array(
+    //             'key'     => 'store_owner',
+    //             'value'   => $user_id,
+    //             'compare' => '=',
+    //         ),
+    //     ) );
+    // }
   }
 
   public static function insert_post( $post_id, $post, $update ) {
@@ -116,13 +116,11 @@ class ExsaeMultivendor_Store {
         $role->add_cap('read_private_stores');
       }
     }
-    flush_rewrite_rules();
   }
 
   public static function deactivate() {
     unregister_post_type( 'store' );
     remove_role('store_admin');
-    flush_rewrite_rules();
   }
 
   public static function extras() {
