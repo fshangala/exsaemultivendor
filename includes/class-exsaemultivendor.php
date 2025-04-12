@@ -20,4 +20,8 @@ class ExsaeMultivendor {
   public static function restrict_post_access( $query ) {
     ExsaeMultivendor_Store::restrict_post_access($query);
   }
+
+  public static function add_meta_boxes() {
+    ExsaeMultivendor_Store::add_meta_boxes();
+  }
 }

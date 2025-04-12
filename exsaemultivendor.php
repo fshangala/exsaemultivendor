@@ -61,4 +61,9 @@ function exsaemultivendor_restrict_post_access( $query ) {
 }
 add_action( 'pre_get_posts', 'exsaemultivendor_restrict_post_access' );
 
+function exsaemultivendor_add_meta_boxes() {
+  ExsaeMultivendor::add_meta_boxes();
+}
+add_action( 'add_meta_boxes', 'exsaemultivendor_add_meta_boxes' );
+
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-login.php';

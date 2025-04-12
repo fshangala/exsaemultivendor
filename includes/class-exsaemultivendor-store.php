@@ -1,5 +1,20 @@
 <?php
 class ExsaeMultivendor_Store {
+  public static function add_meta_boxes() {
+    global $post;
+    if ( get_post_type( $post ) == 'store' ) {
+        ?>
+        <script type="text/javascript">
+            (function($) {
+                $(document).ready(function() {
+                    $('label[for="store_owner"]').closest('.postbox').hide();
+                });
+            })(jQuery);
+        </script>
+        <?php
+    }
+  }
+
   public static function restrict_post_access($query) {
     global $pagenow;
     if ( is_admin() && $query->is_main_query() && $pagenow == 'edit.php' && isset( $query->query_vars['post_type'] ) && $query->query_vars['post_type'] == 'store' && !current_user_can('edit_others_store') ) {
