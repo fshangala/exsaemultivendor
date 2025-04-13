@@ -39,6 +39,12 @@ class ExsaeMultivendor {
     ExsaeMultivendor_Listing::save_post($post_id);
   }
 
+  static function enqueue_block_editor_assets() {
+  }
+
+  static function enqueue_scripts() {
+  }
+
   public static function extras() {
     ExsaeMultivendor_Store::extras();
     ExsaeMultivendor_Product::extras();

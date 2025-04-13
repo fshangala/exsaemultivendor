@@ -61,6 +61,8 @@ class ExsaeMultivendor_Listing {
         'menu_icon'          => 'dashicons-list-view', // Dashicon for the menu item
         'menu_position'      => 5,
         'supports'           => false,
+        'show_in_rest'       => true,
+        'rest_base'          => 'listings',
     );
     register_post_type( 'listing', $args );
   }
@@ -130,7 +132,7 @@ class ExsaeMultivendor_Listing {
       delete_post_meta( $post_id, 'product_price');
     }
   }
-
+  
   public static function extras() {
     function add_product_name_column( $columns ) {
       $columns = array(

@@ -67,6 +67,16 @@ function exsaemultivendor_save_post($post_id) {
 }
 add_action('save_post', 'exsaemultivendor_save_post');
 
+function exsaemultivendor_enqueue_block_editor_assets() {
+  ExsaeMultivendor::enqueue_block_editor_assets();
+}
+add_action('enqueue_block_editor_assets', 'exsaemultivendor_enqueue_block_editor_assets');
+
+function exsaemultivendor_enqueue_scripts() {
+  ExsaeMultivendor::enqueue_scripts();
+}
+add_action('wp_enqueue_scripts', 'exsaemultivendor_enqueue_scripts');
+
 ExsaeMultivendor::extras();
 
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-login.php';
