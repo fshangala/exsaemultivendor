@@ -1,0 +1,72 @@
+.exsaemultivendor-listings-shortcode .listings-flex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.exsaemultivendor-listings-shortcode .listing-item {
+  width: calc(33.333% - 20px); /* Adjust the width as needed */
+  margin: 10px;
+  box-sizing: border-box;
+  background-color: #fff; /* Background color for the listing item */
+  border-radius: 5px; /* Rounded corners */
+  overflow: hidden; /* Prevent overflow of content */
+  transition: transform 0.3s ease; /* Smooth transition for hover effect */
+}
+.exsaemultivendor-listings-shortcode .listing-item:hover {
+  transform: scale(1.05); /* Scale effect on hover */
+}
+
+.exsaemultivendor-listings-shortcode .listings-item {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin: 16px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.exsaemultivendor-listings-shortcode .listings-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.exsaemultivendor-listings-shortcode .listings-item-header {
+  background-color: #f8f9fa;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.exsaemultivendor-listings-shortcode .listings-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.exsaemultivendor-listings-shortcode .listings-item-content {
+  padding: 16px;
+}
+
+.exsaemultivendor-listings-shortcode .listing-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 12px;
+}
+
+.exsaemultivendor-listings-shortcode .add-to-cart {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.exsaemultivendor-listings-shortcode .add-to-cart:hover {
+  background-color: #0056b3;
+}
