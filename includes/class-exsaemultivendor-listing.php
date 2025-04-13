@@ -132,7 +132,57 @@ class ExsaeMultivendor_Listing {
       delete_post_meta( $post_id, 'product_price');
     }
   }
-  
+
+  static function enqueue_scripts() {
+    wp_enqueue_style(
+      'exsaemultivendor-listing-style',
+      EXSAEMULTIVENDOR_PLUGIN_URL . 'assets/css/exsaemultivendor-listing.css',
+      array(),
+      EXSAEMULTIVENDOR_VERSION
+    );
+    wp_enqueue_script(
+      'exsaemultivendor-listing-script',
+      EXSAEMULTIVENDOR_PLUGIN_URL . 'assets/js/exsaemultivendor-listing.js',
+      array( 'jquery' ),
+      EXSAEMULTIVENDOR_VERSION,
+      true
+    );
+  }
+
+  static function listing_shortcode( $atts) {
+    $atts = shortcode_atts( array(
+      'number' => 5,
+    ), $atts, 'exsaemultivendor_listing' );
+
+    $number_of_listings = absint( $atts['number'] );
+
+    $listings = get_posts( array(
+      'post_type' => 'listing',
+      'posts_per_page' => $number_of_listings,
+    ) );
+
+    if ( empty( $listings ) ) {
+      return '<p>' . __( 'No listings found.', 'exsae-listings' ) . '</p>';
+    }
+
+    ob_start();
+    ?>
+    <div class="exsae-listings-shortcode">
+        <ul>
+            <?php foreach ( $listings as $listing ) : ?>
+                <li>
+                    <a href="<?php echo esc_url( get_permalink( $listing->ID ) ); ?>">
+                        <?php echo esc_html( $listing->post_title ); ?>
+                    </a>
+                    <?php // Add other listing details here, like thumbnail, excerpt, etc. ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php
+    return ob_get_clean();
+  }
+
   public static function extras() {
     function add_product_name_column( $columns ) {
       $columns = array(
@@ -168,6 +218,7 @@ class ExsaeMultivendor_Listing {
       }
     }
     add_action( 'manage_listing_posts_custom_column', 'display_product_name_column', 10, 2 );
+    add_shortcode( 'exsaemultivendor_listing', [__CLASS__,'listing_shortcode'] );
   }
 }
 

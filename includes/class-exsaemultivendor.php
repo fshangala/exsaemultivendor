@@ -43,6 +43,7 @@ class ExsaeMultivendor {
   }
 
   static function enqueue_scripts() {
+    ExsaeMultivendor_Listing::enqueue_scripts();
   }
 
   public static function extras() {
