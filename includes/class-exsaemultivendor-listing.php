@@ -97,7 +97,8 @@ class ExsaeMultivendor_Listing {
         } else {
             echo '<p>' . __( 'No products available.', 'exsae-multivendor-listing' ) . '</p>';
         }
-      }
+      },
+      'listing'
     );
 
     add_meta_box(
@@ -264,6 +265,7 @@ class ExsaeMultivendor_Listing {
     add_action( 'manage_listing_posts_custom_column', 'display_product_name_column', 10, 2 );
     add_shortcode( 'exsaemultivendor_listing', [__CLASS__,'listing_shortcode'] );
     add_shortcode( 'exsaemultivendor_single_listing', [__CLASS__,'single_listing_shortcode'] );
+    add_shortcode( 'exsaemultivendor_cart', [ExsaeMultivendor_Cart::class,'render_cart_shortcode'] );
   }
 }
 

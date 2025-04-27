@@ -27,6 +27,7 @@ require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor.php'
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-store.php';
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-product.php';
 require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-listing.php';
+require_once EXSAEMULTIVENDOR_PLUGIN_DIR . 'includes/class-exsaemultivendor-cart.php';
 
 // Activation hook
 function exsaemultivendor_activate() {
@@ -76,6 +77,11 @@ function exsaemultivendor_enqueue_scripts() {
   ExsaeMultivendor::enqueue_scripts();
 }
 add_action('wp_enqueue_scripts', 'exsaemultivendor_enqueue_scripts');
+
+function exsaemultivendor_admin_menu() {
+  ExsaeMultivendor::admin_menu();
+}
+add_action('admin_menu', 'exsaemultivendor_admin_menu');
 
 ExsaeMultivendor::extras();
 
