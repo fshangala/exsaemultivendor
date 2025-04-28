@@ -186,7 +186,7 @@ class ExsaeMultivendor_Listing {
                 <img src="<?php echo esc_url( $featured_image_url ); ?>" alt="<?php echo esc_attr( $product->post_title ); ?>" />
                 <div class="listings-item-content">
                     <div class="listing-price"><?php echo esc_html( $product_price ); ?></div>
-                    <button class="add-to-cart" data-product-id="<?php echo esc_attr( $product_id ); ?>"><?php _e( 'Add to Cart', 'exsae-multivendor-listing' ); ?></button>
+                    <button onclick="Cart.add(<?php echo esc_html( $listing->ID ); ?>, 1, <?php echo esc_html( $product_price ); ?>);" class="add-to-cart" data-product-id="<?php echo esc_attr( $product_id ); ?>"><?php _e( 'Add to Cart', 'exsae-multivendor-listing' ); ?></button>
                 </div>
               </div>
             <?php endforeach; ?>

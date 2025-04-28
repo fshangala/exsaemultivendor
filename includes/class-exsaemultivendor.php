@@ -44,6 +44,7 @@ class ExsaeMultivendor {
 
   static function enqueue_scripts() {
     ExsaeMultivendor_Listing::enqueue_scripts();
+    ExsaeMultivendor_Cart::enqueue_scripts();
   }
 
   static function admin_menu() {
@@ -54,5 +55,6 @@ class ExsaeMultivendor {
     ExsaeMultivendor_Store::extras();
     ExsaeMultivendor_Product::extras();
     ExsaeMultivendor_Listing::extras();
+    ExsaeMultivendor_Cart::extras();
   }
 }

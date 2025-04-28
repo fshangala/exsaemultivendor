@@ -156,72 +156,6 @@ class ExsaeMultivendor_Cart {
         return $count;
     }
 
-    /**
-     * Renders the user's cart using a shortcode.
-     *
-     * @param array $atts Shortcode attributes.
-     * @return string HTML representation of the user's cart.
-     */
-    static function render_cart_shortcode( $atts ) {
-      $atts = shortcode_atts(
-          array(
-              'empty_message' => 'Your cart is currently empty.',
-          ),
-          $atts,
-          'exsaemultivendor_cart'
-      );
-
-      $cart      = self::get();
-      $user_id   = get_current_user_id();
-
-      if ( ! $user_id ) {
-          return '<p>Please log in to view your cart.</p>'; // Or redirect to login page
-      }
-
-      if ( empty( $cart ) ) {
-          return '<p>' . esc_html( $atts['empty_message'] ) . '</p>';
-      }
-
-      ob_start();
-      ?>
-      <div class="exsaemultivendor-cart">
-          <h2>Your Cart</h2>
-          <ul>
-              <?php
-              $total_price = 0; // Initialize total price
-              foreach ( $cart as $listing_id => $quantity ) :
-                  // Get product details (replace with your actual product data retrieval)
-                  $product_id = get_post_meta( $listing_id, 'listing_product', true );
-                  $product = get_post($product_id);
-                  $product_price = get_post_meta($listing_id, 'product_price', true);
-                  if ( ! $product ) {
-                      continue; // Skip if product doesn't exist
-                  }
-                  $subtotal      = $product_price * $quantity;
-                  $total_price   += $subtotal;
-                  ?>
-                  <li class="exsae-cart-item">
-                      <span class="exsae-cart-item-name"><?php echo esc_html( $product->post_title ); ?></span>
-                      <span class="exsae-cart-item-quantity">Quantity: <?php echo esc_html( $quantity ); ?></span>
-                      <span class="exsae-cart-item-price">Price: <?php echo wc_price( $product_price ); ?></span>
-                      <span class="exsae-cart-item-subtotal">Subtotal: <?php echo wc_price( $subtotal ); ?></span>
-                      <button class="exsae-remove-from-cart" data-product-id="<?php echo esc_attr( $listing_id ); ?>">Remove</button>
-                      <div class="exsae-quantity-changer">
-                          <button class="exsae-change-quantity" data-product-id="<?php echo esc_attr( $listing_id ); ?>" data-quantity="<?php echo esc_attr( $quantity - 1 ); ?>">-</button>
-                          <input type="number" value="<?php echo esc_attr( $quantity ); ?>" class="exsae-cart-quantity-input" data-product-id="<?php echo esc_attr( $product_id ); ?>">
-                          <button class="exsae-change-quantity" data-product-id="<?php echo esc_attr( $listing_id ); ?>" data-quantity="<?php echo esc_attr( $quantity + 1 ); ?>">+</button>
-                      </div>
-                  </li>
-              <?php endforeach; ?>
-          </ul>
-          <p class="exsae-cart-total">Total: <?php echo wc_price( $total_price ); ?></p>
-          <a href="" class="btn">Checkout</a>
-      </div>
-      <?php
-
-      return ob_get_clean();
-    }
-
     static function render_cart_page() {
       $user_id = get_current_user_id();
 
@@ -269,5 +203,30 @@ class ExsaeMultivendor_Cart {
             'dashicons-cart',
             6
         );
+    }
+
+    static function enqueue_scripts() {
+        wp_enqueue_script(
+          'exsaemultivendor-cart-script',
+          EXSAEMULTIVENDOR_PLUGIN_URL . 'assets/js/exsaemultivendor-cart.js',
+          array( 'jquery' ),
+          EXSAEMULTIVENDOR_VERSION,
+          true
+        );
+    }
+
+    static function render_cart_shortcode() {
+      if(isset($_POST['cart']) && $_POST['cart'] == 'checkout'){
+        echo var_dump($_POST);
+      }
+      ob_start();
+      ?>
+      <div class="cart-container"></div>
+      <?php
+      return ob_get_clean();
+    }
+
+    static function extras() {
+        add_shortcode( 'exsaemultivendor_cart', array( __CLASS__, 'render_cart_shortcode' ) );
     }
 }
