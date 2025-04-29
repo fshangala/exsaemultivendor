@@ -1,3 +1,17 @@
+var CartItem = {
+  create: (listing_id, quantity, price) => {
+    return {
+      listing_id: listing_id,
+      quantity: quantity,
+      price: price,
+    };
+  },
+  update: (item, quantity) => {
+    item.quantity = quantity;
+    return item;
+  },
+}
+
 const Cart = {
   items:[],
   total:()=>{
@@ -12,7 +26,7 @@ const Cart = {
     if (item) {
       item.quantity += quantity;
     } else {
-      Cart.items.push({ listing_id, quantity, price });
+      Cart.items.push({listing_id, quantity, price});
     }
     Cart.save();
   },
@@ -116,31 +130,35 @@ const Cart = {
     cartContainer.appendChild(cartActions);
     cartActions.classList.add('flex','flex-row','flex-wrap','justify-content-center','gap-2');
 
-    const clearButton = document.createElement('button');
-    cartActions.appendChild(clearButton);
-    clearButton.innerText = 'Clear Cart';
-    clearButton.classList.add('btn','btn-danger');
-    clearButton.onclick = () => {
-      Cart.clear();
-      Cart.render(); // Re-render the cart after clearing
-    };
+    if(Cart.items.length > 0) {
+      const clearButton = document.createElement('button');
+      cartActions.appendChild(clearButton);
+      clearButton.innerText = 'Clear Cart';
+      clearButton.classList.add('btn','btn-danger');
+      clearButton.onclick = () => {
+        Cart.clear();
+        Cart.render(); // Re-render the cart after clearing
+      };
+    }
 
     const checkoutForm = document.createElement("form");
     cartActions.appendChild(checkoutForm);
-    checkoutForm.setAttribute("method","POST");
+    checkoutForm.method = "POST";
 
     const itemsInput = document.createElement("input");
     checkoutForm.appendChild(itemsInput);
     itemsInput.setAttribute("type","hidden");
-    itemsInput.setAttribute("name","items");
-    itemsInput.setAttribute("value",JSON.stringify(Cart.items));
+    itemsInput.setAttribute("name","cart_data");
+    itemsInput.setAttribute("value",JSON.stringify({items:Cart.items}));
 
-    const submitButton = document.createElement("input");
-    checkoutForm.appendChild(submitButton);
-    submitButton.setAttribute("type","submit");
-    submitButton.setAttribute("name","cart");
-    submitButton.setAttribute("value","checkout");
-    submitButton.classList.add('btn','btn-primary');
+    if(Cart.items.length > 0) {
+      const submitButton = document.createElement("input");
+      checkoutForm.appendChild(submitButton);
+      submitButton.setAttribute("type","submit");
+      submitButton.setAttribute("name","cart");
+      submitButton.setAttribute("value","checkout");
+      submitButton.classList.add('btn','btn-primary');
+    }
   },
 }
 

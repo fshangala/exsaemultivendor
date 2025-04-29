@@ -169,7 +169,7 @@ class ExsaeMultivendor_Listing {
     ob_start();
     ?>
     <div class="exsaemultivendor-listings-shortcode">
-        <div class="listings-flex">
+        <div class="flex flex-row flex-wrap gap-2 justify-content-center w-100">
             <?php foreach ( $listings as $listing ) : ?>
               <?php 
               $product_id = get_post_meta($listing->ID, 'listing_product', true);
@@ -179,12 +179,12 @@ class ExsaeMultivendor_Listing {
               $featured_image_url = get_the_post_thumbnail_url($product_id, 'thumbnail');
               $featured_image_url = $featured_image_url ? $featured_image_url : EXSAEMULTIVENDOR_PLUGIN_URL . 'assets/images/box.png';
               ?>
-              <div class="listings-item">
+              <div class="flex-shrink-0 w-240px">
                 <div class="listings-item-header">
-                  <h3><a href="<?php echo esc_url( get_permalink( $listing->ID ) ); ?>"><?php echo esc_html( $product->post_title ); ?></a></h3>
+                  <h3 class="text-center"><a href="<?php echo esc_url( get_permalink( $listing->ID ) ); ?>"><?php echo esc_html( $product->post_title ); ?></a></h3>
                 </div>
-                <img src="<?php echo esc_url( $featured_image_url ); ?>" alt="<?php echo esc_attr( $product->post_title ); ?>" />
-                <div class="listings-item-content">
+                <img class="w-100" src="<?php echo esc_url( $featured_image_url ); ?>" alt="<?php echo esc_attr( $product->post_title ); ?>" />
+                <div class="listings-item-content text-center">
                     <div class="listing-price"><?php echo esc_html( $product_price ); ?></div>
                     <button onclick="Cart.add(<?php echo esc_html( $listing->ID ); ?>, 1, <?php echo esc_html( $product_price ); ?>);" class="add-to-cart" data-product-id="<?php echo esc_attr( $product_id ); ?>"><?php _e( 'Add to Cart', 'exsae-multivendor-listing' ); ?></button>
                 </div>

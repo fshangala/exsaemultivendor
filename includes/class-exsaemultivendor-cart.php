@@ -157,40 +157,7 @@ class ExsaeMultivendor_Cart {
     }
 
     static function render_cart_page() {
-      $user_id = get_current_user_id();
-
-      $cart = self::get();
-
-      if (empty($cart)) {
-          echo '<p>Your cart is empty.</p>';
-          return;
-      }
-
-      ob_start();
-      ?>
-      <div>
-          <h2>Your Cart</h2>
-          <ul>
-              <?php
-              foreach ($cart as $listing_id => $quantity) {
-                  // Get product details (replace with your actual product data retrieval)
-                  $product_id = get_post_meta($listing_id, 'listing_product', true);
-                  $product = get_post($product_id);
-                  if (!$product) {
-                      continue; // Skip if product doesn't exist
-                  }
-                  ?>
-                  <li>
-                      <span><?php echo esc_html($product->post_title); ?></span>
-                      <span>Quantity: <?php echo esc_html($quantity); ?></span>
-                      <button class="exsae-remove-from-cart" data-product-id="<?php echo esc_attr($listing_id); ?>">Remove</button>
-                  </li>
-              <?php } ?>
-          </ul>
-          <a href="" class="btn">Checkout</a>
-      </div>
-      <?php
-      return ob_get_clean();
+        echo do_shortcode( '[exsaemultivendor_cart]' );
     }
 
     static function admin_menu() {
@@ -215,9 +182,19 @@ class ExsaeMultivendor_Cart {
         );
     }
 
+    static function admin_enqueue_scripts() {
+        wp_enqueue_script(
+          'exsaemultivendor-cart-admin-script',
+          EXSAEMULTIVENDOR_PLUGIN_URL . 'assets/js/exsaemultivendor-cart.js',
+          array( 'jquery' ),
+          EXSAEMULTIVENDOR_VERSION,
+          true
+        );
+    }
+
     static function render_cart_shortcode() {
       if(isset($_POST['cart']) && $_POST['cart'] == 'checkout'){
-        echo var_dump($_POST);
+        $cart = json_decode(stripslashes($_POST['cart_data']), true);
       }
       ob_start();
       ?>

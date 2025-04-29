@@ -78,6 +78,11 @@ function exsaemultivendor_enqueue_scripts() {
 }
 add_action('wp_enqueue_scripts', 'exsaemultivendor_enqueue_scripts');
 
+function exsaemultivendor_admin_enqueue_scripts() {
+  ExsaeMultivendor::admin_enqueue_scripts();
+}
+add_action('admin_enqueue_scripts', 'exsaemultivendor_admin_enqueue_scripts');
+
 function exsaemultivendor_admin_menu() {
   ExsaeMultivendor::admin_menu();
 }
