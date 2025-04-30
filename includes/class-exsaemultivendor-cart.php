@@ -193,13 +193,48 @@ class ExsaeMultivendor_Cart {
     }
 
     static function render_cart_shortcode() {
-      if(isset($_POST['cart']) && $_POST['cart'] == 'checkout'){
-        $cart = json_decode(stripslashes($_POST['cart_data']), true);
-      }
       ob_start();
-      ?>
-      <div class="cart-container"></div>
-      <?php
+      if(isset($_POST['cart']) && $_POST['cart'] == 'checkout'){
+        $user_id = get_current_user_id();
+        $user = $user_id ? get_userdata($user_id) : null;
+        $user_metadata = $user ? get_user_meta($user_id) : null;
+        echo var_dump($user_metadata);
+        ?>
+        <div>
+          <h2>Checkout</h2>
+          <form method="POST">
+            <div class="flex flex-column gap-2">
+              <div>
+                <label>First Name</label>
+                <input class="w-100 p-1" type="name" name="first_name" placeholder="First Name" value="<?php echo $user_metadata['first_name'][0] ?? ''; ?>" required>
+              </div>
+              <div>
+                <label>Last Name</label>
+                <input class="w-100 p-1" type="name" name="last_name" placeholder="Last Name" value="<?php echo $user_metadata['last_name'][0] ?? ''; ?>" required>
+              </div>
+              <input type="email" name="email" placeholder="Email" required>
+              <input type="text" name="address" placeholder="Address" required>
+              <input type="text" name="city" placeholder="City" required>
+              <input type="text" name="state" placeholder="State" required>
+              <input type="text" name="zip" placeholder="Zip Code" required>
+              <input type="text" name="country" placeholder="Country" required>
+              <input type="text" name="phone" placeholder="Phone Number" required>
+
+              <input type="hidden" name="cart" value="submit">
+              <input type="hidden" name="cart_data" value="<?php echo esc_attr( $_POST['cart_data'] ); ?>">
+              <button type="submit" class="btn btn-success">Place Order</button>
+            </div>
+          </form>
+        </div>
+        <?php
+      } elseif (isset($_POST['cart']) && $_POST['cart'] == 'submit') {
+        $cart = stripslashes($_POST['cart_data']);
+        do_action('create_order', $cart);
+      } else {
+        ?>
+        <div class="cart-container"></div>
+        <?php
+      }
       return ob_get_clean();
     }
 

@@ -4,6 +4,7 @@ class ExsaeMultivendor {
     ExsaeMultivendor_Store::activate();
     ExsaeMultivendor_Product::activate();
     ExsaeMultivendor_Listing::activate();
+    ExsaeMultivendor_Order::activate();
     flush_rewrite_rules();
   }
 
@@ -11,6 +12,7 @@ class ExsaeMultivendor {
     ExsaeMultivendor_Store::deactivate();
     ExsaeMultivendor_Product::deactivate();
     ExsaeMultivendor_Listing::deactivate();
+    ExsaeMultivendor_Order::deactivate();
     flush_rewrite_rules();
   }
 
@@ -22,6 +24,7 @@ class ExsaeMultivendor {
     ExsaeMultivendor_Store::init();
     ExsaeMultivendor_Product::init();
     ExsaeMultivendor_Listing::init();
+    ExsaeMultivendor_Order::init();
   }
 
   public static function insert_post($post_id, $post, $update) {
@@ -60,5 +63,6 @@ class ExsaeMultivendor {
     ExsaeMultivendor_Product::extras();
     ExsaeMultivendor_Listing::extras();
     ExsaeMultivendor_Cart::extras();
+    ExsaeMultivendor_Order::extras();
   }
 }
