@@ -198,7 +198,6 @@ class ExsaeMultivendor_Cart {
         $user_id = get_current_user_id();
         $user = $user_id ? get_userdata($user_id) : null;
         $user_metadata = $user ? get_user_meta($user_id) : null;
-        echo var_dump($user_metadata);
         ?>
         <div>
           <h2>Checkout</h2>
@@ -212,13 +211,34 @@ class ExsaeMultivendor_Cart {
                 <label>Last Name</label>
                 <input class="w-100 p-1" type="name" name="last_name" placeholder="Last Name" value="<?php echo $user_metadata['last_name'][0] ?? ''; ?>" required>
               </div>
-              <input type="email" name="email" placeholder="Email" required>
-              <input type="text" name="address" placeholder="Address" required>
-              <input type="text" name="city" placeholder="City" required>
-              <input type="text" name="state" placeholder="State" required>
-              <input type="text" name="zip" placeholder="Zip Code" required>
-              <input type="text" name="country" placeholder="Country" required>
-              <input type="text" name="phone" placeholder="Phone Number" required>
+              <div>
+                <label>Email</label>
+                <input class="w-100 p-1" type="email" name="email" placeholder="Email" value="<?php echo $user->data->user_email ?? ''; ?>" required>
+              </div>
+              <div>
+                <label>Address</label>
+                <input class="w-100 p-1" type="text" name="address" placeholder="Address" value="<?php echo $user_metadata['billing_address'][0] ?? ''; ?>" required>
+              </div>
+              <div>
+                <label>City</label>
+                <input class="w-100 p-1" type="text" name="city" placeholder="City" value="<?php echo $user_metadata['billing_city'][0] ?? ''; ?>" required>
+              </div>
+              <div>
+                <label>State/Province</label>
+                <input class="w-100 p-1" type="text" name="state" placeholder="State" value="<?php echo $user_metadata['billing_state'][0] ?? ''; ?>" required>
+              </div>
+              <div>
+                <label>Zip Code</label>
+                <input class="w-100 p-1" type="text" name="zip" placeholder="Zip Code" value="<?php echo $user_metadata['billing_postcode'][0] ?? ''; ?>" required>
+              </div>
+              <div>
+                <label>Country</label>
+                <input class="w-100 p-1" type="text" name="country" placeholder="Country" value="<?php echo $user_metadata['billing_country'][0] ?? ''; ?>" required>
+              </div>
+              <div>
+                <label>Phone Number</label>
+                <input class="w-100 p-1" type="text" name="phone" placeholder="Phone Number" value="<?php echo $user_metadata['billing_phone'][0] ?? ''; ?>" required>
+              </div>
 
               <input type="hidden" name="cart" value="submit">
               <input type="hidden" name="cart_data" value="<?php echo esc_attr( $_POST['cart_data'] ); ?>">
