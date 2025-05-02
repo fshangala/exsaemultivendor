@@ -75,22 +75,32 @@ class ExsaeMultivendor_Order {
     register_post_type( 'order', $args );
   }
 
-  static function create_order(String $cart) {
-    $order = array(
+  static function create_order(array $order) {
+    $meta_input = [];
+    foreach ($order as $key => $value) {
+      if($key == "store") {
+        $meta_input['store_id'] = $order['store']->ID; 
+      } elseif($key == "items") {
+        $items = [];
+        foreach($order['items'] as $item) {
+          $item_array = array(
+            'listing_id' => $item['listing']->ID,
+            'quantity' => $item['quantity']
+          );
+          array_push($items,json_encode($item_array));
+        }
+        $meta_input['items'] = $items;
+      } else {
+        $meta_input[$key] = $value;
+      }
+    }
+    $order_object = array(
       'post_title' => 'Order #' . time(),
       'post_type' => 'order',
       'post_status' => 'publish',
-      'post_author' => get_current_user_id(),
-      'meta_input' => array(
-        'cart' => $cart,
-      ),
+      'meta_input' => $meta_input,
     );
-    echo var_dump($order);
-    // $order_id = wp_insert_post($order);
-    // if ($order_id) {
-    //   return $order_id;
-    // }
-    // return false;
+    wp_insert_post($order);
   }
 }
 ?>

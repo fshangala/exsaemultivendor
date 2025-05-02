@@ -2,160 +2,6 @@
 
 class ExsaeMultivendor_Cart {
 
-    /**
-     * Gets the user's cart.
-     *
-     * @return array The user's cart, or an empty array if no cart exists.
-     */
-    public static function get() {
-        $user_id = get_current_user_id();
-        if ( ! $user_id ) {
-            return array(); // Return empty array if user not logged in.
-        }
-
-        $cart_json = get_user_meta( $user_id, 'cart', true );
-        $cart      = json_decode( $cart_json, true );
-
-        return ( is_array( $cart ) ) ? $cart : array(); // Simplified return
-    }
-
-    /**
-     * Adds an item to the user's cart.
-     *
-     * @param int $product_id The ID of the product to add.
-     * @param int $quantity   The quantity of the product to add.
-     *
-     * @return bool True on success, false on failure.
-     */
-    public static function add( $product_id, $quantity = 1 ) {
-        $user_id = get_current_user_id();
-        if ( ! $user_id ) {
-            return false; // User not logged in.  Consider throwing an exception.
-        }
-
-        if ( ! is_numeric( $product_id ) || ! is_numeric( $quantity ) || $quantity < 1 ) {
-            return false; // Handle invalid input
-        }
-
-        $cart = self::get();
-
-        if ( isset( $cart[ $product_id ] ) ) {
-            $cart[ $product_id ] += $quantity;
-        } else {
-            $cart[ $product_id ] = $quantity;
-        }
-
-        $cart_json = wp_json_encode( $cart );
-        if ( $cart_json ) {
-            update_user_meta( $user_id, 'cart', $cart_json );
-            return true;
-        }
-        return false; // Return false if wp_json_encode fails
-    }
-
-    /**
-     * Updates the quantity of a product in the user's cart.
-     *
-     * @param int $product_id The ID of the product to update.
-     * @param int $quantity   The new quantity.
-     *
-     * @return bool True on success, false on failure.
-     */
-    public static function update( $product_id, $quantity ) {
-        $user_id = get_current_user_id();
-        if ( ! $user_id ) {
-            return false; // User not logged in
-        }
-
-        if ( ! is_numeric( $product_id ) || ! is_numeric( $quantity ) ) {
-            return false; // Handle invalid input
-        }
-
-        $cart = self::get();
-
-        if ( isset( $cart[ $product_id ] ) ) {
-            $cart[ $product_id ] = $quantity;
-            if ( $quantity <= 0 ) {
-                unset( $cart[ $product_id ] );
-            }
-            $cart_json = wp_json_encode( $cart );
-            if($cart_json){
-               update_user_meta( $user_id, 'cart', $cart_json );
-               return true;
-            }
-            return false;
-        }
-
-        return false;
-    }
-
-    /**
-     * Removes a product from the user's cart.
-     *
-     * @param int $product_id The ID of the product to remove.
-     *
-     * @return bool True on success, false on failure.
-     */
-    public static function remove( $product_id ) {
-        $user_id = get_current_user_id();
-        if ( ! $user_id ) {
-             return false; // User not logged in
-        }
-
-        if ( ! is_numeric( $product_id ) ) {
-            return false; //handle invalid input
-        }
-
-        $cart = self::get();
-
-        if ( isset( $cart[ $product_id ] ) ) {
-            unset( $cart[ $product_id ] );
-            $cart_json = wp_json_encode( $cart );
-            if($cart_json){
-                update_user_meta( $user_id, 'cart', $cart_json );
-                return true;
-            }
-            return false;
-        }
-
-        return false;
-    }
-
-    /**
-     * Clears the user's cart.
-     *
-     * @return bool True on success, false on failure.
-     */
-    public static function clear() {
-        $user_id = get_current_user_id();
-        if ( ! $user_id ) {
-            return false; // User not logged in
-        }
-
-        delete_user_meta( $user_id, 'cart' );
-
-        return true;
-    }
-
-    /**
-     * Get the number of items in the user's cart.
-     *
-     * @return int The number of items in the cart.
-     */
-    public static function get_item_count() {
-        $user_id = get_current_user_id();
-         if ( ! $user_id ) {
-             return 0; // User not logged in
-        }
-        $cart  = self::get();
-        $count = 0;
-        foreach ( $cart as $quantity ) {
-            $count += $quantity;
-        }
-
-        return $count;
-    }
-
     static function render_cart_page() {
         echo do_shortcode( '[exsaemultivendor_cart]' );
     }
@@ -192,15 +38,100 @@ class ExsaeMultivendor_Cart {
         );
     }
 
+    static function extras() {
+        add_shortcode( 'exsaemultivendor_cart', array( __CLASS__, 'render_cart_shortcode' ) );
+    }
+
+    static function create_orders_from_cart(array $cart) {
+      $orders = [];
+      foreach ($cart['items'] as $item) {
+        $listing = get_post($item['listing_id']);
+        $product_price = get_post_meta($listing->ID, 'product_price', true);
+        $product_id = get_post_meta($listing->ID, 'listing_product', true);
+        $product = get_post($product_id);
+        $store_id = get_post_meta($product->ID, 'product_store', true);
+        $store = get_post($store_id);
+
+        $order_item = array(
+          'listing' => $listing,
+          'product' => $product,
+          'quantity' => $item['quantity'],
+          'price' => $product_price,
+          'total' => $item['quantity'] * $product_price
+        );
+
+        $current_order_index=-1;
+        foreach ($orders as $key => $value) {
+          if($orders[$key]['store']->ID == $store_id) {
+            $current_order_index = $key;
+            break;
+          }
+        }
+        
+        if($current_order_index < 0) {
+          $current_order = array(
+            'store' => $store,
+            'items' => [$order_item]
+          );
+          array_push($orders,$current_order);
+        } else {
+          array_push($orders[$current_order_index]['items'],$order_item);
+        }
+      }
+      return $orders;
+    }
+
     static function render_cart_shortcode() {
       ob_start();
       if(isset($_POST['cart']) && $_POST['cart'] == 'checkout'){
+        $cart_json = stripslashes($_POST['cart_data']);
+        $cart = json_decode($cart_json,true);
         $user_id = get_current_user_id();
         $user = $user_id ? get_userdata($user_id) : null;
         $user_metadata = $user ? get_user_meta($user_id) : null;
+
+        $orders = self::create_orders_from_cart($cart);
         ?>
         <div>
-          <h2>Checkout</h2>
+          <h2>Orders</h2>
+          <div>
+            <?php
+            foreach ($orders as $order) {
+              ?>
+              <div>
+                <h4><?php echo $order['store']->post_title; ?></h4>
+                <table class="w-100">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                    foreach ($order['items'] as $order_item) {
+                      ?>
+                      <tr>
+                        <td><?php echo $order_item['product']->post_title; ?></td>
+                        <td><?php echo $order_item['price'] ?></td>
+                        <td><?php echo $order_item['quantity'] ?></td>
+                        <td><?php echo $order_item['total'] ?></td>
+                      </tr>
+                      <?php
+                    }
+                    ?>
+                  </tbody>
+                </table>
+              </div>
+              <?php
+            }
+            ?>
+          </div>
+        </div>
+        <div>
+          <h2>Billing information</h2>
           <form method="POST">
             <div class="flex flex-column gap-2">
               <div>
@@ -241,24 +172,36 @@ class ExsaeMultivendor_Cart {
               </div>
 
               <input type="hidden" name="cart" value="submit">
-              <input type="hidden" name="cart_data" value="<?php echo esc_attr( $_POST['cart_data'] ); ?>">
+              <input type="hidden" name="cart_data" value="<?php echo base64_encode($cart_json); ?>">
               <button type="submit" class="btn btn-success">Place Order</button>
             </div>
           </form>
         </div>
         <?php
       } elseif (isset($_POST['cart']) && $_POST['cart'] == 'submit') {
-        $cart = stripslashes($_POST['cart_data']);
-        do_action('create_order', $cart);
+        $cart_json = base64_decode($_POST['cart_data']);
+        $cart = json_decode($cart_json,true);
+        $orders = self::create_orders_from_cart($cart);
+        foreach ($orders as $order) {
+          $order['billing_first_name'] = $_POST['first_name'];
+          $order['billing_last_name'] = $_POST['last_name'];
+          $order['billing_email'] = $_POST['email'];
+          $order['billing_address'] = $_POST['address'];
+          $order['billing_city'] = $_POST['city'];
+          $order['billing_state'] = $_POST['state'];
+          $order['billing_zip'] = $_POST['zip'];
+          $order['billing_country'] = $_POST['country'];
+          $order['billing_phone'] = $_POST['phone'];
+          do_action('create_order', $order);
+        }
+        ?>
+        <p>Your order has been successfully submitted, please check your email inbox for an invoice!</p>
+        <?php
       } else {
         ?>
         <div class="cart-container"></div>
         <?php
       }
       return ob_get_clean();
-    }
-
-    static function extras() {
-        add_shortcode( 'exsaemultivendor_cart', array( __CLASS__, 'render_cart_shortcode' ) );
     }
 }
